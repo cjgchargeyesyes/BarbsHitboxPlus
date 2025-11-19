@@ -11,53 +11,47 @@ body {
   font-family: Arial, sans-serif;
   background: #0d0f17;
   color: #fff;
-  overflow-x: hidden;
 }
 #sidebar {
-  width: 200px;
+  width: 220px;
   height: 100vh;
   background: #11131d;
   padding: 20px;
   position: fixed;
   top: 0;
-  right: 0;
+  left: 0;
   overflow-y: auto;
-  box-shadow: -5px 0 20px #0007;
-  transition: transform 0.5s;
-  transform: translateX(0);
-  z-index: 100;
-}
-#sidebar.hidden {
-  transform: translateX(180px);
+  box-shadow: 0 0 20px #0007;
+  transition: transform 0.5s ease;
+  z-index: 1000;
 }
 #sidebar h2 {
   margin-top: 0;
   color: #8ab4ff;
-  font-size: 20px;
 }
 #sidebar a {
   display: block;
-  padding: 8px;
+  padding: 10px;
   text-decoration: none;
   color: #8ab4ff;
-  border-radius: 6px;
-  margin-bottom: 5px;
+  border-radius: 8px;
   transition: 0.2s;
+  margin-bottom: 6px;
 }
 #sidebar a:hover {
   background: #1a2030;
 }
 #content {
-  padding: 40px 20px;
-  max-width: 900px;
-  margin: auto;
+  margin-left: 240px;
+  padding: 30px;
+  transition: margin-left 0.5s ease;
 }
 section {
   margin-bottom: 60px;
 }
 .card {
   background: #11131d;
-  padding: 25px;
+  padding: 20px;
   border-radius: 12px;
   margin-top: 20px;
   box-shadow: 0 0 10px #0007;
@@ -87,18 +81,19 @@ pre {
 .copy-btn:hover {
   background: #3a4257;
 }
-@media(max-width: 768px){
+@media (max-width: 768px) {
   #sidebar {
-    width: 160px;
-    transform: translateX(140px);
+    width: 180px;
   }
-  #sidebar.hidden {
-    transform: translateX(140px);
+  #content {
+    margin-left: 200px;
+    padding: 20px;
   }
 }
 </style>
 </head>
 <body>
+
 <div id="sidebar">
   <h2>Barb's Hitbox</h2>
   <a href="#overview">Overview</a>
@@ -107,11 +102,13 @@ pre {
   <a href="#controllers">Controllers</a>
   <a href="#examples">Examples</a>
 </div>
+
 <div id="content">
+
 <section id="overview">
   <h1>Overview</h1>
   <div class="card">
-    <p><strong>Barb's Hitbox</strong> is a fully optimized, modular hitbox engine for Roblox games.</p>
+    <p><strong>This hitbox module</strong> is a fully optimized, modular hitbox engine for Roblox games.</p>
     <ul>
       <li>Spheres / Boxes / Capsules / Rays</li>
       <li>Whitelist / Blacklist / Team filters</li>
@@ -123,8 +120,10 @@ pre {
     </ul>
   </div>
 </section>
+
 <section id="types">
   <h2>Hitbox Types</h2>
+
   <div class="card">
     <h3>Sphere Hitbox</h3>
     <pre><button class="copy-btn" onclick="copyCode(event)">Copy</button><code>
@@ -137,20 +136,123 @@ BarbsHitbox.Sphere(origin, radius, {
 })
     </code></pre>
   </div>
+
+  <div class="card">
+    <h3>Box Hitbox</h3>
+    <pre><button class="copy-btn" onclick="copyCode(event)">Copy</button><code>
+BarbsHitbox.Box(origin, Vector3.new(6,4,3), options)
+    </code></pre>
+  </div>
+
+  <div class="card">
+    <h3>Capsule Hitbox</h3>
+    <pre><button class="copy-btn" onclick="copyCode(event)">Copy</button><code>
+BarbsHitbox.Capsule(origin, radius, height, options)
+    </code></pre>
+  </div>
+
+  <div class="card">
+    <h3>Raycast Hitbox</h3>
+    <pre><button class="copy-btn" onclick="copyCode(event)">Copy</button><code>
+BarbsHitbox.Raycast(origin, direction, length, radius, options)
+    </code></pre>
+  </div>
 </section>
+
+<section id="options">
+  <h2>Options Reference</h2>
+  <div class="card">
+    <p>All hitbox calls share the same options table:</p>
+    <pre><button class="copy-btn" onclick="copyCode(event)">Copy</button><code>
+{
+  Owner = character,
+  Visualize = false,
+  DebugMode = "All",
+  SelfHit = false,
+  MaxCharacters = 10,
+  HitCooldown = 0.2,
+  Teams = nil,
+  Whitelist = nil,
+  Blacklist = nil,
+  DamageFalloff = function(distance) end,
+  OnHit = function(hitData)
+    print(hitData)
+  end
+}
+    </code></pre>
+  </div>
+</section>
+
+<section id="controllers">
+  <h2>Controllers</h2>
+  <div class="card">
+    <h3>Create a Follow-Controller</h3>
+    <pre><button class="copy-btn" onclick="copyCode(event)">Copy</button><code>
+local controller = BarbsHitbox.CreateController(
+  "Sphere",
+  hrp,
+  8,
+  nil,
+  {
+    Owner = character,
+    Visualize = true
+  }
+)
+controller:Start(true)
+    </code></pre>
+  </div>
+</section>
+
+<section id="examples">
+  <h2>Examples</h2>
+  <div class="card">
+    <h3>Duration Burst Hitbox</h3>
+    <pre><button class="copy-btn" onclick="copyCode(event)">Copy</button><code>
+local Duration = 0.2
+local startTime = os.clock()
+RunService.Heartbeat:Connect(function()
+  if os.clock() - startTime >= Duration then return end
+  BarbsHitbox.Sphere(
+    hrp.CFrame * CFrame.new(0, 0, -3),
+    8,
+    { Owner = character, Visualize = true }
+  )
+end)
+    </code></pre>
+  </div>
+</section>
+
 </div>
+
 <script>
+let hideTimeout;
 const sidebar = document.getElementById('sidebar');
-let hideTimeout = setTimeout(() => sidebar.classList.add('hidden'), 4000);
-sidebar.addEventListener('mouseenter', () => sidebar.classList.remove('hidden'));
-sidebar.addEventListener('mouseleave', () => hideTimeout = setTimeout(() => sidebar.classList.add('hidden'), 4000));
-sidebar.addEventListener('click', () => sidebar.classList.remove('hidden'));
+
 function copyCode(event) {
-  const code = event.target.parentElement.querySelector("code").innerText.trim();
+  const code = event.target.parentElement.querySelector("code").innerText;
   navigator.clipboard.writeText(code);
   event.target.innerText = "Copied!";
   setTimeout(() => event.target.innerText = "Copy", 900);
 }
+
+function hideSidebar() {
+  sidebar.style.transform = 'translateX(-180px)';
+}
+
+function showSidebar() {
+  sidebar.style.transform = 'translateX(0)';
+  clearTimeout(hideTimeout);
+  hideTimeout = setTimeout(hideSidebar, 2500);
+}
+
+hideTimeout = setTimeout(hideSidebar, 2500);
+document.addEventListener('mousemove', e => {
+  if (e.clientX < 50) showSidebar();
+});
+document.addEventListener('touchstart', e => {
+  if (e.touches[0].clientX < 50) showSidebar();
+});
 </script>
+
 </body>
 </html>
