@@ -16,7 +16,6 @@ body {
   display: flex;
 }
 
-/* SIDEBAR */
 #sidebar {
   width: 260px;
   height: 100vh;
@@ -27,6 +26,12 @@ body {
   left: 0;
   overflow-y: auto;
   box-shadow: 0 0 20px #0007;
+  transition: transform 0.4s ease;
+  z-index: 50;
+}
+
+#sidebar.hidden {
+  transform: translateX(-230px);
 }
 
 #sidebar h2 {
@@ -52,6 +57,11 @@ body {
   margin-left: 260px;
   padding: 40px;
   width: calc(100% - 260px);
+  transition: margin-left 0.4s ease;
+}
+
+#content.full-width {
+  margin-left: 30px;
 }
 
 section {
@@ -94,6 +104,23 @@ pre {
 .copy-btn:hover {
   background: #3a4257;
 }
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  #sidebar {
+    transform: translateX(-230px);
+    position: fixed;
+    z-index: 60;
+  }
+
+  #sidebar.show {
+    transform: translateX(0);
+  }
+
+  #content {
+    margin-left: 30px;
+  }
+}
 </style>
 </head>
 
@@ -114,7 +141,6 @@ pre {
   <h1>Overview</h1>
   <div class="card">
     <p><strong>Barb's Hitbox</strong> is a fully optimized, modular hitbox engine for Roblox games.</p>
-
     <ul>
       <li>Spheres / Boxes / Capsules / Rays</li>
       <li>Whitelist / Blacklist / Team filters</li>
@@ -168,30 +194,21 @@ BarbsHitbox.Raycast(origin, direction, length, radius, options)
 <section id="options">
   <h2>Options Reference</h2>
   <div class="card">
-    <p>All hitbox calls share the same options table:</p>
-
 <pre><button class="copy-btn" onclick="copyCode(event)">Copy</button><code>
 {
   Owner = character,
   Visualize = false,
   DebugMode = "All",
   SelfHit = false,
-
   MaxCharacters = 10,
   HitCooldown = 0.2,
-
   Teams = nil,
   Whitelist = nil,
   Blacklist = nil,
-
   DamageFalloff = function(distance) end,
-
-  OnHit = function(hitData)
-    print(hitData)
-  end
+  OnHit = function(hitData) print(hitData) end
 }
 </code></pre>
-
   </div>
 </section>
 
@@ -200,44 +217,31 @@ BarbsHitbox.Raycast(origin, direction, length, radius, options)
 
   <div class="card">
     <h3>Create a Follow-Controller</h3>
-
 <pre><button class="copy-btn" onclick="copyCode(event)">Copy</button><code>
 local controller = BarbsHitbox.CreateController(
   "Sphere",
   hrp,
   8,
   nil,
-  {
-    Owner = character,
-    Visualize = true
-  }
+  { Owner = character, Visualize = true }
 )
-
 controller:Start(true)
 -- controller:Start(false) to stop
 </code></pre>
-
   </div>
 </section>
 
 <section id="examples">
   <h2>Examples</h2>
-
   <div class="card">
     <h3>Duration Burst Hitbox</h3>
-
 <pre><button class="copy-btn" onclick="copyCode(event)">Copy</button><code>
 local Duration = 0.2
 local startTime = os.clock()
 
 RunService.Heartbeat:Connect(function()
   if os.clock() - startTime >= Duration then return end
-
-  BarbsHitbox.Sphere(
-    hrp.CFrame * CFrame.new(0, 0, -3),
-    8,
-    { Owner = character, Visualize = true }
-  )
+  BarbsHitbox.Sphere(hrp.CFrame * CFrame.new(0, 0, -3), 8, { Owner = character, Visualize = true })
 end)
 </code></pre>
   </div>
@@ -246,15 +250,34 @@ end)
 </div>
 
 <script>
+let sidebar = document.getElementById("sidebar");
+let content = document.getElementById("content");
+let hideTimeout;
 
 function copyCode(event) {
   const code = event.target.parentElement.querySelector("code").innerText;
   navigator.clipboard.writeText(code);
-
   event.target.innerText = "Copied!";
   setTimeout(() => event.target.innerText = "Copy", 900);
 }
+
+function resetSidebarTimer() {
+  clearTimeout(hideTimeout);
+  sidebar.classList.remove("hidden");
+  content.classList.remove("full-width");
+  hideTimeout = setTimeout(() => {
+    sidebar.classList.add("hidden");
+    content.classList.add("full-width");
+  }, 4000);
+}
+
+sidebar.addEventListener("mouseenter", resetSidebarTimer);
+content.addEventListener("mousemove", (e) => {
+  if(e.clientX <= 50) { resetSidebarTimer(); }
+});
+
+resetSidebarTimer();
 </script>
 
 </body>
-</html
+</html>
