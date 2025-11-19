@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Barb's Hitbox Module</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-900 text-white font-sans">
+<div class="max-w-5xl mx-auto py-10 px-6">
+    <h1 class="text-4xl font-bold mb-6 text-center">Barb's Hitbox Module</h1>
+    <p class="text-center text-gray-300 mb-10">Lightweight, fast, and easy-to-use Roblox hitbox module.</p>
+
+    <div class="flex space-x-4 border-b border-gray-600 mb-6" id="tabs">
+        <button class="py-2 px-4 tab active" data-tab="overview">Overview</button>
+        <button class="py-2 px-4 tab" data-tab="api">API</button>
+        <button class="py-2 px-4 tab" data-tab="examples">Examples</button>
+    </div>
+
+    <div id="content">
+        <div class="tab-content" id="overview">
+            <h2 class="text-2xl font-semibold mb-4">What Is This?</h2>
+            <p class="text-gray-300 mb-4">Barb's Hitbox Module is a simple and optimized hitbox system that lets you spawn sphere hitboxes with damage callbacks, cooldowns, and visualization.</p>
+            <ul class="list-disc ml-6 text-gray-300">
+                <li>Fast hit detection</li>
+                <li>Easy API</li>
+                <li>Optional visualizer</li>
+                <li>Supports damage, cooldowns, and duration</li>
+            </ul>
+        </div>
+
+        <div class="tab-content hidden" id="api">
+            <h2 class="text-2xl font-semibold mb-4">API Reference</h2>
+            <h3 class="text-xl font-semibold mt-4">SmartHitbox.Sphere(position, radius, settings)</h3>
+            <pre class="bg-gray-800 p-4 rounded mt-2">-- position: CFrame
+-- radius: number
+-- settings: table
+
+SmartHitbox.Sphere(pos, 8, {
+    Owner = character,
+    HitCooldown = 0.3,
+    MaxCharacters = 3,
+    Visualize = true,
+    OnHit = function(hit)
+        print("Hit", hit)
+    end,
+})</pre>
+        </div>
+
+        <div class="tab-content hidden" id="examples">
+            <h2 class="text-2xl font-semibold mb-4">Examples</h2>
+
+            <h3 class="text-xl font-semibold mt-3">Basic Hitbox</h3>
+            <pre class="bg-gray-800 p-4 rounded mt-2">local SmartHitbox = require(ReplicatedStorage["Barb's Hitbox"])
+
+local pos = hrp.CFrame * CFrame.new(0,0,-3)
+SmartHitbox.Sphere(pos, 6, {
+    Owner = character,
+    Visualize = true,
+    OnHit = function(hit)
+        hit.Humanoid:TakeDamage(10)
+    end
+})</pre>
+
+            <h3 class="text-xl font-semibold mt-6">Duration Example</h3>
+            <pre class="bg-gray-800 p-4 rounded mt-2">local duration = 0.25
+local start = os.clock()
+
+local conn\conn = RunService.Heartbeat:Connect(function()
+    if os.clock() - start >= duration then conn:Disconnect() return end
+    SmartHitbox.Sphere(hrp.CFrame, 6, {Owner = char})
+end)</pre>
+        </div>
+    </div>
+</div>
+
+<script>
+const tabs = document.querySelectorAll(".tab");
+const contents = document.querySelectorAll(".tab-content");
+
+tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+        tabs.forEach(t => t.classList.remove("active", "border-b-2", "border-white"));
+        tab.classList.add("active", "border-b-2", "border-white");
+
+        contents.forEach(c => c.classList.add("hidden"));
+        document.getElementById(tab.dataset.tab).classList.remove("hidden");
+    });
+});
+</script>
+</body>
+</html>
