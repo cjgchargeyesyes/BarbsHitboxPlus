@@ -1,92 +1,294 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Barb's Hitbox Module</title>
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Barb's Hitbox — Documentation</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#0f141a; --muted:#9bb1c9; --accent:#8ab4ff; --card:#131620; --border:#161b22; --max:980px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; background:var(--bg);color:#e6edf3;}
+
+  header{position:fixed;left:0;right:0;top:0;height:64px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:flex-end;padding:0 20px;border-bottom:1px solid var(--border);z-index:40}
+  header .meta{color:var(--accent);font-weight:600}
+
+  nav.toc{position:fixed;right:0;top:64px;width:260px;height:calc(100vh - 64px);background:var(--panel);border-left:1px solid var(--border);padding:22px;overflow:auto}
+  nav.toc h3{color:var(--accent);margin:0 0 10px 0;font-size:15px}
+  nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:6px 0;border-radius:6px}
+  nav.toc a.active{color:#fff;font-weight:600}
+
+  main{
+  width:100%;
+  margin:96px 0 0 0;
+  padding:0 24px 120px 24px;
+}
+  .card{background:var(--card);border:1px solid var(--border);padding:20px;border-radius:10px;margin:18px 0}
+  h1{color:var(--accent);font-size:30px;margin:0 0 12px}
+  h2{color:var(--accent);font-size:20px;margin:6px 0}
+  h3{color:#cfe0ff;margin:6px 0}
+  p{color:#dbe9ff;line-height:1.7}
+  code{background:#0b1220;padding:2px 6px;border-radius:6px;color:#bfe1ff}
+  pre{background:#071023;padding:12px;border-radius:8px;overflow:auto;border:1px solid #0d1a2a}
+  ul{margin:8px 0 8px 20px}
+
+  @media(min-width:1100px){
+    main{margin-right:300px}
+  }
+  @media(max-width:1099px){
+    nav.toc{position:static;width:100%;height:auto;border-left:none;border-top:1px solid var(--border)}
+    main{margin:96px 16px 32px}
+  }
+
+  .muted{color:var(--muted)}
+  .kbd{background:#071020;padding:4px 8px;border-radius:6px;font-size:13px}
+</style>
 </head>
-<body class="bg-gray-900 text-white font-sans">
-<div class="max-w-5xl mx-auto py-10 px-6">
-    <h1 class="text-4xl font-bold mb-6 text-center">Barb's Hitbox Module</h1>
-    <p class="text-center text-gray-300 mb-10">Lightweight, fast, and easy-to-use Roblox hitbox module.</p>
+<body>
+<header><div class="meta">Barb's Hitbox • v1.0.1</div></header>
 
-    <div class="flex space-x-4 border-b border-gray-600 mb-6" id="tabs">
-        <button class="py-2 px-4 tab active" data-tab="overview">Overview</button>
-        <button class="py-2 px-4 tab" data-tab="api">API</button>
-        <button class="py-2 px-4 tab" data-tab="examples">Examples</button>
+<nav class="toc" id="toc">
+  <h3>On this page</h3>
+  <a href="#overview">Overview</a>
+  <a href="#features">Features</a>
+  <a href="#installation">Installation</a>
+  <a href="#quickstart">Quickstart</a>
+  <a href="#api">API Reference</a>
+  <a href="#options">Options</a>
+  <a href="#prediction">Velocity Prediction</a>
+  <a href="#performance">Performance Tips</a>
+  <a href="#examples">Examples</a>
+  <a href="#troubleshooting">Troubleshooting</a>
+  <a href="#changelog">Changelog</a>
+</nav>
+
+<main>
+  <section id="overview">
+    <h1>Overview</h1>
+    <div class="card">
+      <p>This hitbox module is a high-performance hitbox system for your games. It provides sphere, box, capsule, cone, and ray-based overlap queries with flexible filtering, multi-hit and cooldown support, status effects, knockback, animation integration, and optional velocity prediction to reduce missed collisions at high speed.</p>
+      <p>The design goal is predictable server-side hit detection with low allocations and friendly defaults so you can plug it into weapons, abilities, and NPCs.</p>
     </div>
+  </section>
 
-    <div id="content">
-        <div class="tab-content" id="overview">
-            <h2 class="text-2xl font-semibold mb-4">What Is This?</h2>
-            <p class="text-gray-300 mb-4">Barb's Hitbox Module is a simple and optimized hitbox system that lets you spawn sphere hitboxes with damage callbacks, cooldowns, and visualization.</p>
-            <ul class="list-disc ml-6 text-gray-300">
-                <li>Fast hit detection</li>
-                <li>Easy API</li>
-                <li>Optional visualizer</li>
-                <li>Supports damage, cooldowns, and duration</li>
-            </ul>
-        </div>
+  <section id="features">
+    <h2>Features</h2>
+    <div class="card">
+      <ul>
+        <li>Shapes: Sphere, Box, Capsule, Cone, Raycast</li>
+        <li>Filtering: Whitelist, Blacklist, Team, Tags, CustomFilter</li>
+        <li>Utilities: Damage falloff, crits, life-steal, knockback</li>
+        <li>Multi-hit rules and per-target cooldowns</li>
+        <li>Animation marker integration and controller helpers</li>
+        <li>Debug visualization with pooled parts</li>
+        <li>Velocity prediction (Adaptive / Latency / Acceleration)</li>
+      </ul>
+    </div>
+  </section>
 
-        <div class="tab-content hidden" id="api">
-            <h2 class="text-2xl font-semibold mb-4">API Reference</h2>
-            <h3 class="text-xl font-semibold mt-4">SmartHitbox.Sphere(position, radius, settings)</h3>
-            <pre class="bg-gray-800 p-4 rounded mt-2">-- position: CFrame
--- radius: number
--- settings: table
+  <section id="installation">
+    <h2>Installation</h2>
+    <div class="card">
+      <ol>
+        <li>Put the module into <code>ReplicatedStorage.Modules</code> (or another shared folder).</li>
+        <li>Require it from server scripts: <code>local BarbsHitbox = require(ReplicatedStorage.Modules.BarbsHitbox)</code>.</li>
+        <li>If using controllers or visual debug parts in Studio, run from ServerScriptService or a script with appropriate permissions.</li>
+      </ol>
+    </div>
+  </section>
 
-SmartHitbox.Sphere(pos, 8, {
-    Owner = character,
-    HitCooldown = 0.3,
-    MaxCharacters = 3,
-    Visualize = true,
-    OnHit = function(hit)
-        print("Hit", hit)
-    end,
-})</pre>
-        </div>
+  <section id="quickstart">
+    <h2>Quickstart</h2>
+    <div class="card">
+      <p>Simple sphere hitbox example:</p>
+      <pre><code>local Barbs = require(ReplicatedStorage.Modules.BarbsHitbox)
 
-        <div class="tab-content hidden" id="examples">
-            <h2 class="text-2xl font-semibold mb-4">Examples</h2>
-
-            <h3 class="text-xl font-semibold mt-3">Basic Hitbox</h3>
-            <pre class="bg-gray-800 p-4 rounded mt-2">local SmartHitbox = require(ReplicatedStorage["Barb's Hitbox"])
-
-local pos = hrp.CFrame * CFrame.new(0,0,-3)
-SmartHitbox.Sphere(pos, 6, {
-    Owner = character,
-    Visualize = true,
-    OnHit = function(hit)
-        hit.Humanoid:TakeDamage(10)
+Barbs.Sphere(workspace.Baseplate.Position + Vector3.new(0,5,0), 6, {
+  Owner = workspace.Players.LocalPlayer.Character,
+  Visualize = true,
+  OnHit = function(hit)
+    if hit.Humanoid then
+      hit.Humanoid:TakeDamage(10)
     end
-})</pre>
-
-            <h3 class="text-xl font-semibold mt-6">Duration Example</h3>
-            <pre class="bg-gray-800 p-4 rounded mt-2">local duration = 0.25
-local start = os.clock()
-
-local conn\conn = RunService.Heartbeat:Connect(function()
-    if os.clock() - start >= duration then conn:Disconnect() return end
-    SmartHitbox.Sphere(hrp.CFrame, 6, {Owner = char})
-end)</pre>
-        </div>
+  end,
+})</code></pre>
     </div>
-</div>
+  </section>
+
+  <section id="api">
+    <h2>API Reference</h2>
+    <div class="card">
+      <h3>BarbsHitbox.Sphere(origin, radius, options)</h3>
+      <p>Runs a sphere overlap at <code>origin</code> with radius <code>radius</code> and the provided <code>options</code>. Returns a table of hit entries.</p>
+
+      <h3>BarbsHitbox.Box(origin, size, options)</h3>
+      <p>Box overlap defined by CFrame <code>origin</code> and <code>size</code> (Vector3).</p>
+
+      <h3>BarbsHitbox.Capsule(origin, radius, height, options)</h3>
+      <p>Capsule overlap using an oriented capsule centered on <code>origin</code>.</p>
+
+      <h3>BarbsHitbox.Cone(origin, radius, halfAngle, options)</h3>
+      <p>Cone overlap using <code>origin</code> CFrame, radius and half-angle in degrees.</p>
+
+      <h3>BarbsHitbox.Raycast(origin, direction, length, radius, options)</h3>
+      <p>Performs a Raycast then optionally performs a radius check around the hit position. Accepts <code>direction</code> Vector3 and <code>length</code>.</p>
+
+      <h3>BarbsHitbox.FromAnimationMarker(animator, track, markerName, shape, params, options)</h3>
+      <p>Wires hitbox triggers to animation marker events. Use this for syncing melee attacks to animation frames.</p>
+
+      <h3>BarbsHitbox.CreateController(shape, origin, param1, param2, options)</h3>
+      <p>Creates a controller object that can be started and stopped. Useful for persistent area effects or continuous sweeps.</p>
+
+      <h3>BarbsHitbox.ApplyDamage(hitData, options)</h3>
+      <p>Utility to apply damage/knockback from a previously gathered hit entry.</p>
+    </div>
+  </section>
+
+  <section id="options">
+    <h2>Options Reference</h2>
+    <div class="card">
+      <p>Common fields used in the options table:</p>
+      <ul>
+        <li><code>Owner</code> — Character model that owns the hit (used for self-hit filtering and life-steal).</li>
+        <li><code>SelfHit</code> — allow hits on the owner when true.</li>
+        <li><code>HitCooldown</code> — per-target cooldown seconds after a hit.</li>
+        <li><code>MaxCharacters</code> — limit number of characters hit.</li>
+        <li><code>MaxHits</code> — limit total hit entries returned.</li>
+        <li><code>MaxClosest</code> — only return the N closest results.</li>
+        <li><code>MultiHit</code> — table {MaxHits = N, Interval = s} for multi-hit per character.</li>
+        <li><code>DebugMode</code> — "All" | "VolumeOnly" | "HitOnly" | nil.</li>
+        <li><code>Visualize</code> — show debug parts for the overlap volume.</li>
+        <li><code>VisualizeDuration</code> — how long the visual lasts (seconds).</li>
+        <li><code>Offset</code> and <code>OffsetMode</code> — shift the origin in local/world space.</li>
+        <li><code>RequireTags</code> — list of CollectionService tags required on the character.</li>
+        <li><code>TargetParts</code> — match only specific part names ("Head", "Torso").</li>
+        <li><code>FilterTeam</code> — "Enemy" or "Ally" when Owner is provided.</li>
+        <li><code>Whitelist</code> / <code>Blacklist</code> — explicit character lists.</li>
+        <li><code>FilterDescendants</code> — array of instances to exclude from overlap queries.</li>
+        <li><code>DetectNonCharacters</code> — allow hits against arbitrary parts.</li>
+        <li><code>CustomFilter</code> — function(char, part) -> boolean to accept/reject.</li>
+        <li><code>OnHit</code> — function(hitData) callback for each accepted hit.</li>
+        <li><code>DamageFalloff</code> — function(distance) -> damage value.</li>
+        <li><code>HitDelay</code> — delay before firing signals or callbacks.</li>
+        <li><code>Lifetime</code> — controller lifetime (seconds).</li>
+        <li><code>VelocityPrediction</code> — enable prediction (true/false)</li>
+        <li><code>VelocityPredictionMode</code> — "Adaptive" | "Latency"</li>
+        <li><code>VelocityPredictionTime</code> — base prediction time in seconds.</li>
+        <li><code>VelocityUseAcceleration</code> — include accel correction.</li>
+      </ul>
+
+      <p>Returned hitData shape:</p>
+      <pre><code>{
+  Character = Model or nil,
+  Humanoid = Humanoid or nil,
+  Root = HumanoidRootPart or nil,
+  Part = hit Part,
+  Distance = number,
+  Damage = optional number,
+  FinalDamage = set by processDamage,
+  IsCrit = boolean,
+}
+</code></pre>
+    </div>
+  </section>
+
+  <section id="prediction">
+    <h2>Velocity Prediction (deep dive)</h2>
+    <div class="card">
+      <p>Prediction helps avoid tunneling when targets or origins move quickly. The module supports three behaviours:</p>
+      <ul>
+        <li><b>Adaptive</b>: prediction time scales with speed (good default).</li>
+        <li><b>Latency</b>: adds a latency-based offset using player ping (server-side).</li>
+        <li><b>Acceleration correction</b>: uses recent velocity samples to adjust for changing acceleration.</li>
+      </ul>
+
+      <h3>Best practices</h3>
+      <ul>
+        <li>Keep <code>VelocityPredictionTime</code> small (0.05–0.15). Larger values increase false positives.</li>
+        <li>Enable acceleration correction only when necessary — it allocates a tiny cache per options table.</li>
+        <li>Clamp insane velocities in gameplay code (e.g., >120 studs/s) instead of increasing prediction time.</li>
+        <li>Predict for the part actually used as origin (Attachment or BasePart).</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="performance">
+    <h2>Performance Tips</h2>
+    <div class="card">
+      <ul>
+        <li>Cache OverlapParams/RaycastParams using the built-in ParamCache — avoid creating new params each frame.</li>
+        <li>Compute prediction once per origin per frame and reuse for multiple hit checks.</li>
+        <li>Prefer <code>MaxClosest</code> and <code>SortByDistance</code> to limit heavy processing when many parts overlap.</li>
+        <li>Use <code>DetectNonCharacters</code> sparingly — character filtering is cheaper.</li>
+        <li>Run high-frequency controllers at a lower tick (e.g., every 2nd Heartbeat) if not required each frame.</li>
+        <li>Pool debug parts like the module does to avoid GC spikes.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="examples">
+    <h2>Examples</h2>
+    <div class="card">
+      <h3>Controller follow + hitsignals</h3>
+      <pre><code>local controller = BarbsHitbox.CreateController("Sphere", hrp, 8, nil, {Owner = char, Visualize = true})
+controller.Hit:Connect(function(hit)
+  if hit.Humanoid then
+    hit.Humanoid:TakeDamage(12)
+  end
+end)
+controller:Start()</code></pre>
+
+      <h3>Animation marker</h3>
+      <pre><code>BarbsHitbox.FromAnimationMarker(animator, track, "hit", "Capsule", {origin = rightArm, param1 = 2, param2 = 4}, {Owner = char})</code></pre>
+
+      <h3>Status effect example</h3>
+      <pre><code>local opts = {StatusEffect = {Name = "Burn", Duration = 5, TickDamage = 2, TickRate = 1}}
+BarbsHitbox.Sphere(origin, 6, opts)</code></pre>
+    </div>
+  </section>
+
+  <section id="troubleshooting">
+    <h2>Troubleshooting & FAQ</h2>
+    <div class="card">
+      <h3>No hits registering</h3>
+      <p>Check:</p>
+      <ul>
+        <li>Are you providing the correct origin (Attachment or part)?</li>
+        <li>Is <code>SelfHit</code> blocking your owner?</li>
+        <li>Are filters/whitelist/blacklist excluding targets?</li>
+        <li>Try enabling <code>Visualize = true</code> in Studio to see the volume.</li>
+      </ul>
+
+      <h3>Prediction seems jittery</h3>
+      <p>Reduce <code>VelocityPredictionTime</code>, disable acceleration correction, or clamp velocities.</p>
+    </div>
+  </section>
+
+  <section id="changelog">
+    <h2>Changelog</h2>
+    <div class="card">
+      <ul>
+        <li><b>v2.1</b> — Improved prediction stability, cleaned API docs, performance tuning.</li>
+        <li><b>v2.0</b> — Added Cone, Raycast radius, controller API, visualization pooling.</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
 
 <script>
-const tabs = document.querySelectorAll(".tab");
-const contents = document.querySelectorAll(".tab-content");
 
-tabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-        tabs.forEach(t => t.classList.remove("active", "border-b-2", "border-white"));
-        tab.classList.add("active", "border-b-2", "border-white");
-
-        contents.forEach(c => c.classList.add("hidden"));
-        document.getElementById(tab.dataset.tab).classList.remove("hidden");
-    });
-});
+const links = Array.from(document.querySelectorAll('nav.toc a'));
+const sections = links.map(l => document.querySelector(l.getAttribute('href')));
+function onScroll(){
+  const y = window.scrollY + 120;
+  let idx = sections.findIndex(s => s && s.offsetTop + s.offsetHeight > y);
+  if(idx === -1) idx = sections.length -1;
+  links.forEach((a,i)=> a.classList.toggle('active', i===idx));
+}
+window.addEventListener('scroll', onScroll);
+onScroll();
 </script>
 </body>
 </html>
